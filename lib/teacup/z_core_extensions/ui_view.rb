@@ -129,13 +129,13 @@ class UIView
         assign = :"#{key}="
         setter = ('set' + key.to_s.sub(/^./) {|c| c.capitalize}).to_sym
         if layer.respond_to?(assign)
-          # puts "Setting layer.#{key} = #{value.inspect}"
+          NSLog "Setting layer.#{key} = #{value.inspect}"
           layer.send(assign, value)
         elsif layer.respond_to?(setter)
-          # puts "Calling layer(#{key}, #{value.inspect})"
+          NSLog "Calling layer(#{key}, #{value.inspect})"
           layer.send(setter, value)
       else
-        puts "Teacup WARN: Can't apply #{key} to #{self.layer.inspect}"
+        NSLog "Teacup WARN: Can't apply #{key} to #{self.layer.inspect}"
         end
       end
     end
@@ -144,15 +144,16 @@ class UIView
       assign = :"#{key}="
       setter = ('set' + key.to_s.sub(/^./) {|c| c.capitalize}).to_sym
       if key == :title && UIButton === self
+        NSLog "Setting #{key} = #{value.inspect}, forState:UIControlStateNormal"
         setTitle(value, forState: UIControlStateNormal)
       elsif respond_to?(assign)
-        # puts "Setting #{key} = #{value.inspect}"
+        NSLog "Setting #{key} = #{value.inspect}"
         send(assign, value)
       elsif respond_to?(setter)
-        # puts "Calling self(#{key}, #{value.inspect})"
+        NSLog "Calling self(#{key}, #{value.inspect})"
         send(setter, value)
       else
-        puts "Teacup WARN: Can't apply #{key} to #{self.inspect}"
+        NSLog "Teacup WARN: Can't apply #{key} to #{self.inspect}"
       end
     end
     self.setNeedsDisplay
