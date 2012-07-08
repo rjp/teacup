@@ -141,8 +141,14 @@ class UIView
     end
 
     properties.each do |key, value|
-      assign = :"#{key}="
-      setter = ('set' + key.to_s.sub(/^./) {|c| c.capitalize}).to_sym
+      if key =~ /^set[A-Z]/
+        assign = nil
+        setter = key.to_s + ':'
+      else
+        assign = :"#{key}="
+        setter = 'set' + key.to_s.sub(/^./) {|c| c.capitalize} + ':'
+      end
+
       if key == :title && UIButton === self
         # NSLog "Setting #{key} = #{value.inspect}, forState:UIControlStateNormal"
         setTitle(value, forState: UIControlStateNormal)
@@ -150,14 +156,14 @@ class UIView
       #   setImage(value, forState: UIControlStateNormal)
       # elsif key == :highlighted && UIButton === self
       #   setImage(value, forState: UIControlStateHighlighted)
-      elsif respond_to?(assign)
+      elsif assign and respond_to?(assign)
         # NSLog "Setting #{key} = #{value.inspect}"
         send(assign, value)
-      elsif respond_to?(setter)
+      elsif respondsToSelector(setter)
         # NSLog "Calling self(#{key}, #{value.inspect})"
         send(setter, value)
       else
-        NSLog "Teacup WARN: Can't apply #{key} to #{self.inspect}"
+        NSLog "Teacup WARN: Can't apply #{setter.inspect}#{assign and " or " + assign.inspect or ""} to #{self.inspect}"
       end
     end
     self.setNeedsDisplay
